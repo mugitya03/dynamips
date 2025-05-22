@@ -741,7 +741,11 @@ static int cmd_push_config(hypervisor_conn_t *conn,int argc,char *argv[])
     * Convert base64 input to standard text. base64 uses 4 bytes for each group of 3 bytes.
     */
    if (strcmp(argv[1],"(keep)") != 0) {
-      startup_len = (strlen(argv[1]) + 3) / 4 * 3;
+      size_t len = strlen(argv[1]);
+      if (len + 3 < len) {
+         goto err_alloc_base64;
+      }
+      size_t startup_len = (len + 3) / 4 * 3;
       if (!(startup_config = malloc(1 + startup_len)))
          goto err_alloc_base64;
 
